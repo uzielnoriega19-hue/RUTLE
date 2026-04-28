@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "246778056540",
+    "project_id": "rutle-test",
+    "storage_bucket": "rutle-test.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246778056540:android:d316312f0f327fefaabb99",
+        "android_client_info": {
+          "package_name": "com.example.rutle_test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGhGlyjVq9E8JN5jE040lxpCC28BqJdS4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

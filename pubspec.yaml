@@ -1,0 +1,45 @@
+name: rutle_test
+description: A new Flutter project.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.10.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_map: ^6.1.0
+  iconoir_flutter: ^6.0.0
+  latlong2: ^0.9.1
+  geolocator: ^11.0.0
+
+  cupertino_icons: ^1.0.8
+
+  firebase_core: ^4.5.0
+  firebase_auth: ^6.2.0
+  cloud_firestore: ^6.1.3
+
+  geocoding: ^2.1.1
+
+  provider: ^6.0.5
+  shared_preferences: ^2.3.0
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - lib/recursos/imagenes/rutle_logo.png
+    - lib/recursos/imagenes/RUTLE-ICONO.png
+
+flutter_launcher_icons:
+  android: true
+  image_path: "lib/recursos/imagenes/RUTLE-ICONO.png"
