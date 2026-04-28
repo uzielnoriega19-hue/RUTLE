@@ -173,7 +173,7 @@ class _LoginPantallaState extends State<LoginPantalla> {
                       password: _passwordController.text,
                     );
 
-                    if (!mounted) return; 
+                    if (!mounted) return;
 
                     if (resultado == '/mainTab') {
                       Navigator.pushNamedAndRemoveUntil(
@@ -198,7 +198,7 @@ class _LoginPantallaState extends State<LoginPantalla> {
                       );
                     }
                   },
-                  style:ElevatedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
                       vertical: size.height * 0.02,
                     ),

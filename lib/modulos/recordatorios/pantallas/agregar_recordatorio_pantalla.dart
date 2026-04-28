@@ -193,7 +193,6 @@ class _AgregarRecordatorioPantallaState
                         height: size.height * 0.06,
                         child: ElevatedButton(
                           onPressed: () async {
-
                             if(_formKey.currentState!.validate()){
                               await controlador.guardarRecordatorio(
                                 titulo: tituloController.text,

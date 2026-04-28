@@ -55,14 +55,16 @@ class _ChatbotVista extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(vertical: 5),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color:
-                            mensaje.esBot ? Colors.grey.shade300 : Colors.blue,
+                        color: mensaje.esBot
+                            ? Colors.grey.shade300
+                            : Colors.blue,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         mensaje.texto,
                         style: TextStyle(
-                          color: mensaje.esBot ? Colors.black : Colors.white,
+                          color:
+                              mensaje.esBot ? Colors.black : Colors.white,
                         ),
                       ),
                     ),
@@ -113,7 +115,8 @@ class _ChatbotVista extends StatelessWidget {
                         IconButton(
                           icon: const Icon(Icons.send),
                           onPressed: () {
-                            final texto = controlador.inputController.text.trim();
+                            final texto =
+                                controlador.inputController.text.trim();
                             if (texto.isNotEmpty) {
                               controlador.guardarRespuestaAbierta(texto);
                             }
@@ -137,7 +140,8 @@ class _ChatbotVista extends StatelessWidget {
                         ),
                       ],
                     ),
-                  if (!controlador.chatCompleto && controlador.pasos.isNotEmpty)
+                  if (!controlador.chatCompleto &&
+                      controlador.pasos.isNotEmpty)
                     ElevatedButton(
                       onPressed: () => controlador.retroceder(),
                       child: const Text("Regresar"),

@@ -302,7 +302,6 @@ class DetalleForoPantalla extends StatelessWidget {
                       SizedBox(width: size.width * 0.04),
                       Expanded(
                         child: esMiembro || esCreador
-                            // Ya es miembro o creador → ir al chat
                             ? ElevatedButton(
                                 onPressed: () {
                                   Navigator.pop(context);
@@ -317,9 +316,7 @@ class DetalleForoPantalla extends StatelessWidget {
                                 },
                                 child: const Text('Entrar al chat'),
                               )
-                            // No es miembro
                             : ElevatedButton(
-                                // Foro privado → deshabilitado
                                 onPressed: esPrivado
                                     ? null
                                     : () async {

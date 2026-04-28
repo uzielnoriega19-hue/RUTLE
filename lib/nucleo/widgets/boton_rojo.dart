@@ -1,10 +1,10 @@
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 
-/// Botón con el degradado de la barra de semana de recolección.
-/// Claro: teal → azul cielo sólido.
-/// Oscuro: azul oscuro semitransparente + blur.
-class BotonGradiente extends StatelessWidget {
+/// Botón de acción destructiva con degradado rojo.
+/// Claro: rojo brillante → rojo oscuro sólido.
+/// Oscuro: rojo muy oscuro semitransparente + blur.
+class BotonRojo extends StatelessWidget {
   final String texto;
   final VoidCallback? onPressed;
   final Widget? iconoWidget;
@@ -12,7 +12,7 @@ class BotonGradiente extends StatelessWidget {
   final double? alto;
   final double borderRadius;
 
-  const BotonGradiente({
+  const BotonRojo({
     super.key,
     required this.texto,
     this.onPressed,
@@ -27,19 +27,18 @@ class BotonGradiente extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final radio = BorderRadius.circular(borderRadius);
-    final disabled = onPressed == null;
 
     final gradiente = isDark
         ? LinearGradient(
             colors: [
-              const Color(0xFF1C3F71).withValues(alpha: 0.82),
-              const Color(0xFF1B78C9).withValues(alpha: 0.82),
+              const Color(0xFF5C0A0A).withValues(alpha: 0.85),
+              const Color(0xFFD32F2F).withValues(alpha: 0.85),
             ],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           )
         : const LinearGradient(
-            colors: [Color(0xFF00ACC1), Color(0xFF6FD3FF)],
+            colors: [Color(0xFFEF5350), Color(0xFFC62828)],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           );
@@ -73,7 +72,7 @@ class BotonGradiente extends StatelessWidget {
       ),
     );
 
-    final boton = ClipRRect(
+    return ClipRRect(
       borderRadius: radio,
       child: isDark
           ? BackdropFilter(
@@ -98,7 +97,5 @@ class BotonGradiente extends StatelessWidget {
               ),
             ),
     );
-
-    return disabled ? Opacity(opacity: 0.45, child: boton) : boton;
   }
 }
