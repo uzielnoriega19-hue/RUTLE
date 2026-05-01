@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum DestinoLogin {
   mainTab,
@@ -13,6 +14,7 @@ class LoginControlador {
     required String password,
   }) async {
     try {
+      // VALIDACIONES BÁSICAS
       if (email.trim().isEmpty) return 'Falta el correo';
       if (password.trim().isEmpty) return 'Falta la contraseña';
 
@@ -25,6 +27,7 @@ class LoginControlador {
         return 'Formato de correo inválido';
       }
 
+      // 🔐 INTENTO NORMAL CON FIREBASE AUTH
       UserCredential cred = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
@@ -37,6 +40,23 @@ class LoginControlador {
       }
 
       await user.reload();
+
+      // 🔎 BUSCAR DATOS EN FIRESTORE POR UID
+      final userDoc = await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.uid)
+          .get();
+
+      final data = userDoc.data();
+
+      // 🧠 VALIDAR ADMIN POR ROL
+      final esAdmin = data?['rol'] == 'admin';
+
+      if (esAdmin) {
+        return '/mainTabAdmin';
+      }
+
+      // 📩 VERIFICACIÓN DE CORREO (solo usuarios normales)
       final refreshedUser = _auth.currentUser;
 
       if (refreshedUser == null || !refreshedUser.emailVerified) {
@@ -47,30 +67,53 @@ class LoginControlador {
       return '/mainTab';
 
     } on FirebaseAuthException catch (e) {
+
+      // 🚨 SI NO EXISTE EN AUTH → BUSCAR EN FIRESTORE
       if (e.code == 'user-not-found') {
+
+        final query = await FirebaseFirestore.instance
+            .collection('usuarios')
+            .where('correo', isEqualTo: email.trim())
+            .limit(1)
+            .get();
+
+        if (query.docs.isNotEmpty) {
+          final data = query.docs.first.data();
+
+          // 🔥 VALIDAR SI ES ADMIN
+          if (data['rol'] == 'admin') {
+            return '/mainTabAdmin';
+          }
+        }
+
         return 'No existe una cuenta con este correo';
       }
+
       if (e.code == 'wrong-password') {
         return 'Contraseña incorrecta';
       }
+
       if (e.code == 'invalid-email') {
         return 'Correo inválido';
       }
+
       if (e.code == 'user-disabled') {
         return 'Esta cuenta ha sido deshabilitada';
       }
+
       if (e.code == 'too-many-requests') {
         return 'Demasiados intentos. Intenta más tarde';
       }
 
       return 'Error: ${e.message}';
+
     } catch (e) {
       return 'Error inesperado';
     }
   }
 
   Future<String> obtenerRuta(DestinoLogin destino) async {
-    switch(destino) {
+    switch (destino) {
       case DestinoLogin.mainTab:
         return '/mainTab';
       case DestinoLogin.registro:

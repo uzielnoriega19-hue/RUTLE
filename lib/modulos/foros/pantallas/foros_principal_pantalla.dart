@@ -37,7 +37,30 @@ class _ForosPrincipalPantallaState extends State<ForosPrincipalPantalla> {
     final topPadding = MediaQuery.of(context).padding.top;
     final controlador = ForosControlador();
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        toolbarHeight: 56,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: isDark
+                  ? const [Color(0xFF1C3F71), Color(0xFF1B78C9)]
+                  : const [Color(0xFF00ACC1), Color(0xFF6FD3FF)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
+        title: const Text(
+          'Foros',
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Stack(
           children: [

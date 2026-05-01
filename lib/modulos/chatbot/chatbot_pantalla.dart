@@ -17,16 +17,61 @@ class ChatbotPantalla extends StatelessWidget {
 class _ChatbotVista extends StatelessWidget {
   const _ChatbotVista();
 
+  Widget _boton(BuildContext context, String texto, VoidCallback? onPressed) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isDark
+                ? const [Color(0xFF1C3F71), Color(0xFF1B78C9)]
+                : const [Color(0xFF00ACC1), Color(0xFF6FD3FF)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            foregroundColor: Colors.white,
+          ),
+          onPressed: onPressed,
+          child: Text(texto),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final controlador = Provider.of<ChatbotControlador>(context);
     final nodo = controlador.obtenerNodoActual();
     final height = MediaQuery.of(context).size.height;
     final keyboard = MediaQuery.of(context).viewInsets.bottom;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Chatbot"),
+        elevation: 0,
+        toolbarHeight: 56,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: isDark
+                  ? const [Color(0xFF1C3F71), Color(0xFF1B78C9)]
+                  : const [Color(0xFF00ACC1), Color(0xFF6FD3FF)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
+        title: const Text(
+          'Chatbot',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -63,8 +108,7 @@ class _ChatbotVista extends StatelessWidget {
                       child: Text(
                         mensaje.texto,
                         style: TextStyle(
-                          color:
-                              mensaje.esBot ? Colors.black : Colors.white,
+                          color: mensaje.esBot ? Colors.black : Colors.white,
                         ),
                       ),
                     ),
@@ -89,10 +133,10 @@ class _ChatbotVista extends StatelessWidget {
                       spacing: 10,
                       runSpacing: 10,
                       children: nodo.opciones.map((opcion) {
-                        return ElevatedButton(
-                          onPressed: () =>
-                              controlador.seleccionarOpcion(opcion),
-                          child: Text(opcion.texto),
+                        return _boton(
+                          context,
+                          opcion.texto,
+                          () => controlador.seleccionarOpcion(opcion),
                         );
                       }).toList(),
                     ),
@@ -121,7 +165,7 @@ class _ChatbotVista extends StatelessWidget {
                               controlador.guardarRespuestaAbierta(texto);
                             }
                           },
-                        )
+                        ),
                       ],
                     ),
                   const SizedBox(height: 15),
@@ -129,23 +173,17 @@ class _ChatbotVista extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ElevatedButton(
-                          onPressed: controlador.enviarAFirebase,
-                          child: const Text("Enviar reporte"),
-                        ),
+                        _boton(context, "Enviar reporte",
+                            controlador.enviarAFirebase),
                         const SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: controlador.cancelarReporte,
-                          child: const Text("Cancelar reporte"),
-                        ),
+                        _boton(context, "Cancelar reporte",
+                            controlador.cancelarReporte),
                       ],
                     ),
                   if (!controlador.chatCompleto &&
                       controlador.pasos.isNotEmpty)
-                    ElevatedButton(
-                      onPressed: () => controlador.retroceder(),
-                      child: const Text("Regresar"),
-                    ),
+                    _boton(
+                        context, "Regresar", () => controlador.retroceder()),
                 ],
               ),
             ),

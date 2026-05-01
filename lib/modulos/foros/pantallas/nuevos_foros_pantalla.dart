@@ -77,11 +77,28 @@ class _NuevosForosPantallaState extends State<NuevosForosPantalla> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nuevos foros'),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: Theme.of(context).brightness == Brightness.dark
+                  ? const [Color(0xFF1C3F71), Color(0xFF1B78C9)]
+                  : const [Color(0xFF00ACC1), Color(0xFF6FD3FF)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
+        title: const Text(
+          'Nuevos foros',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => volver(context),
         ),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: Padding(

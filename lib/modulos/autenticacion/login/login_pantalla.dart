@@ -180,6 +180,11 @@ class _LoginPantallaState extends State<LoginPantalla> {
                         context, '/mainTab',
                         (route) => false,
                       );
+                    } else if (resultado == '/mainTabAdmin') {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context, '/mainTabAdmin',
+                        (route) => false,
+                      );
                     } else if (resultado == '/verificacion') {
                       Navigator.pushNamed(context, '/verificacion');
                     } else {

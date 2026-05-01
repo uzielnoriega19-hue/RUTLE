@@ -6,10 +6,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MapaWidget extends StatefulWidget {
   final double zoom;
+  final LatLng? centroFijo;
 
   const MapaWidget({
     super.key,
     this.zoom = 17,
+    this.centroFijo,
   });
 
   @override
@@ -30,7 +32,11 @@ class _MapaWidgetState extends State<MapaWidget>
   @override
   void initState() {
     super.initState();
-    _cargarCasaUsuario();
+    if (widget.centroFijo != null) {
+      _centroMapa = widget.centroFijo;
+    } else {
+      _cargarCasaUsuario();
+    }
   }
 
   Future<void> _cargarCasaUsuario() async {

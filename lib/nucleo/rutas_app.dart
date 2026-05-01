@@ -23,11 +23,11 @@ import '../modulos/foros/pantallas/chat_foro_pantalla.dart';
 import '../modulos/foros/pantallas/info_foro_pantalla.dart';
 import '../modulos/foros/pantallas/filtros_foro_pantalla.dart';
 import '../admin/main_tab_admin.dart';
-import '../../admin/mapas/mapa_principal_pantalla.dart';
-import '../../admin/mapas/mapa_quejas_pantalla.dart';
-import '../modulos/foros/pantallas/accion_poder_pantalla.dart';
 import '../modulos/foros/pantallas/accion_usuario_pantalla.dart';
+import 'package:rutle_test/admin/usuarios/pantallas/usuarios_principal_pantalla.dart';
+
 class RutasApp {
+  static const usuarioAdmin = '/usuarioAdmin';
   static const accionUsuario = '/accionUsuario';
   static const accionPoder = '/accionPoder';
   static const filtrosForo = '/filtrosForo';
@@ -39,6 +39,7 @@ class RutasApp {
   static const chatBot = '/chatBot';
   static const editarRecordatorio = '/editRecordatorio';
   static const mainTab = '/mainTab';
+  static const mainTabAdmin = '/mainTabAdmin';
   static const splash = '/';
   static const autenticacion = '/autenticacion';
   static const login = '/login';
@@ -100,6 +101,11 @@ class RutasApp {
         case forosPrincipal:
         return MaterialPageRoute(
           builder: (_) => const ForosPrincipalPantalla(),
+        );
+
+      case usuarioAdmin:
+        return MaterialPageRoute(
+          builder: (_) => const AdminPantalla(),
         );
 
       case usuario:
@@ -221,6 +227,11 @@ class RutasApp {
       case mainTab:
         return MaterialPageRoute(
           builder: (_) => const MainTab(),
+        );
+
+      case mainTabAdmin:
+        return MaterialPageRoute(
+          builder: (_) => const MainTabAdmin(),
         );
 
       case mapaPrincipal:

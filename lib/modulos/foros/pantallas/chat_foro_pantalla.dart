@@ -56,10 +56,30 @@ class _ChatForoPantallaState extends State<ChatForoPantalla> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.titulo),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: Theme.of(context).brightness == Brightness.dark
+                  ? const [Color(0xFF1C3F71), Color(0xFF1B78C9)]
+                  : const [Color(0xFF00ACC1), Color(0xFF6FD3FF)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
+        title: Text(
+          widget.titulo,
+          style: const TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert, color: Colors.white),
             onPressed: () async {
               final query = await FirebaseFirestore.instance
                   .collection('foros')
@@ -72,8 +92,8 @@ class _ChatForoPantallaState extends State<ChatForoPantalla> {
 
               final foro = query.docs.first.data();
 
-             final result = await Navigator.push(
-              context,
+              final result = await Navigator.push(
+                context,
                 MaterialPageRoute(
                   builder: (_) => InfoForoPantalla(foro: foro),
                 ),
@@ -85,6 +105,7 @@ class _ChatForoPantallaState extends State<ChatForoPantalla> {
             },
           ),
         ],
+        centerTitle: true,
       ),
 
       body: Column(

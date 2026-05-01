@@ -236,11 +236,33 @@ class _UsuarioPantallaState extends State<UsuarioPantalla> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Perfil"),
+        elevation: 0,
+        toolbarHeight: 56,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Builder(
+          builder: (context) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: isDark
+                      ? const [Color(0xFF1C3F71), Color(0xFF1B78C9)]
+                      : const [Color(0xFF00ACC1), Color(0xFF6FD3FF)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+              ),
+            );
+          },
+        ),
+        title: const Text(
+          "Perfil",
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.menu),
+            icon: const Icon(Icons.menu, color: Colors.white),
             onPressed: mostrarMenu,
           ),
         ],
