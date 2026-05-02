@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'crear_ruta_pantalla.dart';
+import 'ver_rutas_pantalla.dart';
 
 class RutaPrincipalPantalla extends StatelessWidget {
   const RutaPrincipalPantalla({super.key});
@@ -31,12 +32,10 @@ class RutaPrincipalPantalla extends StatelessWidget {
         title: const Text('Rutas', style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
-
-      // 🔥 YA NO HAY CENTER
       body: Padding(
         padding: EdgeInsets.fromLTRB(
           width * 0.08,
-          height * 0.2, // espacio arriba
+          height * 0.2,
           width * 0.08,
           height * 0.04,
         ),
@@ -55,109 +54,89 @@ class RutaPrincipalPantalla extends StatelessWidget {
 
             SizedBox(height: height * 0.05),
 
-            // ───── BOTÓN 1 ─────
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: gradientColors,
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    foregroundColor: Colors.white,
-                    minimumSize: Size(double.infinity, height * 0.065),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
-                    ),
-                  ),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const CrearRutaPantalla(),
-                    ),
-                  ),
-                  child: Text(
-                    'Comenzar desde cero',
-                    style: TextStyle(fontSize: width * 0.042),
-                  ),
-                ),
+            // ── Comenzar desde cero ──────────────────────
+            _BotonGradiente(
+              texto: 'Comenzar desde cero',
+              gradientColors: gradientColors,
+              height: height,
+              width: width,
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const CrearRutaPantalla()),
               ),
             ),
 
             SizedBox(height: height * 0.02),
 
-            // ───── BOTÓN 2 ─────
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: gradientColors,
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    foregroundColor: Colors.white,
-                    minimumSize: Size(double.infinity, height * 0.065),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
-                    ),
-                  ),
-                  onPressed: () {
-                    // placeholder
-                  },
-                  child: Text(
-                    'Usar ruta existente',
-                    style: TextStyle(fontSize: width * 0.042),
-                  ),
-                ),
-              ),
+            // ── Usar ruta existente ───────────────────────
+            _BotonGradiente(
+              texto: 'Usar ruta existente',
+              gradientColors: gradientColors,
+              height: height,
+              width: width,
+              onPressed: () {},
             ),
 
             SizedBox(height: height * 0.02),
 
-            // ───── BOTÓN 3 ─────
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: gradientColors,
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    foregroundColor: Colors.white,
-                    minimumSize: Size(double.infinity, height * 0.065),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
-                    ),
-                  ),
-                  onPressed: () {
-                    // placeholder
-                  },
-                  child: Text(
-                    'Ver rutas',
-                    style: TextStyle(fontSize: width * 0.042),
-                  ),
-                ),
+            // ── Ver rutas ────────────────────────────────
+            _BotonGradiente(
+              texto: 'Ver rutas',
+              gradientColors: gradientColors,
+              height: height,
+              width: width,
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const VerRutasPantalla()),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BotonGradiente extends StatelessWidget {
+  final String texto;
+  final List<Color> gradientColors;
+  final double height;
+  final double width;
+  final VoidCallback onPressed;
+
+  const _BotonGradiente({
+    required this.texto,
+    required this.gradientColors,
+    required this.height,
+    required this.width,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradientColors,
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            minimumSize: Size(double.infinity, height * 0.065),
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero),
+          ),
+          onPressed: onPressed,
+          child: Text(texto, style: TextStyle(fontSize: width * 0.042)),
         ),
       ),
     );

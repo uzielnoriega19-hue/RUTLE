@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MensajeChat {
   final String texto;
@@ -280,12 +281,34 @@ class ChatbotControlador extends ChangeNotifier {
   }
 
   Future<void> enviarAFirebase() async {
-    final data = pasos.map((p) => p.toMap()).toList();
-    await FirebaseFirestore.instance.collection('chatbot').add({
-      'fecha': DateTime.now(),
-      'historial': data,
-    });
-    cancelarReporte();
+    final historial = pasos.map((p) => p.toMap()).toList();
+    final user = FirebaseAuth.instance.currentUser;
+
+    Map<String, dynamic> datosUsuario = {};
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.uid)
+          .get();
+      final d = doc.data() ?? {};
+      datosUsuario = {
+        'uid': user.uid,
+        'nombreUsuario': d['nombreUsuario'] ?? '',
+        'correo': d['correo'] ?? user.email ?? '',
+        'direccion': d['direccionCompleta'] ?? d['direccion'] ?? '',
+      };
+    }
+
+    try {
+      await FirebaseFirestore.instance.collection('quejas').add({
+        'fecha': FieldValue.serverTimestamp(),
+        'historial': historial,
+        ...datosUsuario,
+      });
+      cancelarReporte();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   void scrollFinal() {

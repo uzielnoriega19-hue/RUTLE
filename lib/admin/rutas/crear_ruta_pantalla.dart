@@ -61,8 +61,21 @@ class _CrearRutaPantallaState extends State<CrearRutaPantalla> {
 
       if (duplicado.docs.isNotEmpty) {
         if (mounted) {
-          _mostrarError(
-              'Ya existe una ruta con el nombre "$nombre". Cambia el nombre e intenta de nuevo.');
+          await showDialog<void>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Nombre duplicado'),
+              content: Text(
+                'Ya existe una ruta con el nombre "$nombre".\nCambia el nombre e intenta de nuevo.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Aceptar'),
+                ),
+              ],
+            ),
+          );
         }
         return;
       }
@@ -166,22 +179,44 @@ class _CrearRutaPantallaState extends State<CrearRutaPantalla> {
 
                   SizedBox(height: height * 0.012),
 
-                  TextField(
-                    controller: _rutaController,
-                    maxLength: 4,
-                    textCapitalization: TextCapitalization.characters,
-                    inputFormatters: [_RutaFormatter()],
-                    decoration: InputDecoration(
-                      hintText: 'Ej: A123',
-                      counterText: '',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      prefixText: 'Ruta:  ',
-                      prefixStyle: TextStyle(
-                          color: cs.onSurface,
-                          fontWeight: FontWeight.w600),
+                  // "Ruta:" siempre visible como widget externo al campo
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: cs.outline),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    onChanged: (_) => setState(() {}),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 14),
+                          child: Text(
+                            'Ruta:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: width * 0.038,
+                              color: cs.onSurface,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: _rutaController,
+                            maxLength: 4,
+                            textCapitalization: TextCapitalization.characters,
+                            inputFormatters: [_RutaFormatter()],
+                            decoration: InputDecoration(
+                              hintText: 'A123',
+                              counterText: '',
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: width * 0.02,
+                                  vertical: height * 0.018),
+                            ),
+                            onChanged: (_) => setState(() {}),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   SizedBox(height: height * 0.03),
@@ -417,9 +452,10 @@ class _CrearRutaPantallaState extends State<CrearRutaPantalla> {
           ),
 
           // ── Botones fijos ─────────────────────────────
+          const Divider(height: 1, thickness: 1),
           Padding(
             padding: EdgeInsets.fromLTRB(
-                width * 0.06, 0, width * 0.06, height * 0.03),
+                width * 0.06, height * 0.022, width * 0.06, height * 0.03),
             child: Row(
               children: [
                 Expanded(

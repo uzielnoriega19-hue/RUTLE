@@ -7,11 +7,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class MapaWidget extends StatefulWidget {
   final double zoom;
   final LatLng? centroFijo;
+  final List<LatLng>? rutaPuntos;
+  final Color? rutaColor;
 
   const MapaWidget({
     super.key,
     this.zoom = 17,
     this.centroFijo,
+    this.rutaPuntos,
+    this.rutaColor,
   });
 
   @override
@@ -114,6 +118,7 @@ class _MapaWidgetState extends State<MapaWidget>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (_centroMapa == null) {
       return const Center(child: CircularProgressIndicator());
@@ -139,16 +144,63 @@ class _MapaWidgetState extends State<MapaWidget>
               userAgentPackageName: 'com.example.rutle',
             ),
 
+            // Ruta del día (si fue asignada)
+            if (widget.rutaPuntos != null && widget.rutaPuntos!.length >= 2)
+              PolylineLayer(
+                polylines: [
+                  Polyline(
+                    points: widget.rutaPuntos!,
+                    color: widget.rutaColor ?? const Color(0xFF1E88E5),
+                    strokeWidth: 5,
+                  ),
+                ],
+              ),
+            if (widget.rutaPuntos != null && widget.rutaPuntos!.isNotEmpty)
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: widget.rutaPuntos!.first,
+                    width: 18,
+                    height: 18,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: widget.rutaColor ?? const Color(0xFF1E88E5),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2.5),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
             MarkerLayer(
               markers: [
                 Marker(
                   point: _centroMapa!,
-                  width: 50,
-                  height: 50,
-                  child: const Icon(
-                    Icons.location_on,
-                    color: Colors.red,
-                    size: 40,
+                  width: 44,
+                  height: 44,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF1B78C9)
+                          : const Color(0xFF00ACC1),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.home_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
                 ),
               ],

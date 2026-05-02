@@ -171,13 +171,39 @@ class _ChatbotVista extends StatelessWidget {
                   const SizedBox(height: 15),
                   if (controlador.chatCompleto)
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _boton(context, "Enviar reporte",
-                            controlador.enviarAFirebase),
+                        Expanded(
+                          child: _boton(
+                            context,
+                            "Enviar reporte",
+                            () async {
+                              try {
+                                await controlador.enviarAFirebase();
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Reporte enviado correctamente'),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error al enviar: $e'),
+                                      backgroundColor: Theme.of(context).colorScheme.error,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        ),
                         const SizedBox(width: 10),
-                        _boton(context, "Cancelar reporte",
-                            controlador.cancelarReporte),
+                        Expanded(
+                          child: _boton(context, "Cancelar",
+                              controlador.cancelarReporte),
+                        ),
                       ],
                     ),
                   if (!controlador.chatCompleto &&
