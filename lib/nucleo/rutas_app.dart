@@ -25,6 +25,7 @@ import '../modulos/foros/pantallas/filtros_foro_pantalla.dart';
 import '../admin/main_tab_admin.dart';
 import '../modulos/foros/pantallas/accion_usuario_pantalla.dart';
 import 'package:rutle_test/admin/usuarios/pantallas/usuarios_principal_pantalla.dart';
+import '../recolector/main_tab_recolector.dart';
 
 class RutasApp {
   static const usuarioAdmin = '/usuarioAdmin';
@@ -40,6 +41,7 @@ class RutasApp {
   static const editarRecordatorio = '/editRecordatorio';
   static const mainTab = '/mainTab';
   static const mainTabAdmin = '/mainTabAdmin';
+  static const mainTabRecolector = '/mainTabRecolector';
   static const splash = '/';
   static const autenticacion = '/autenticacion';
   static const login = '/login';
@@ -232,6 +234,11 @@ class RutasApp {
       case mainTabAdmin:
         return MaterialPageRoute(
           builder: (_) => const MainTabAdmin(),
+        );
+
+      case mainTabRecolector:
+        return MaterialPageRoute(
+          builder: (_) => const MainTabRecolector(),
         );
 
       case mapaPrincipal:

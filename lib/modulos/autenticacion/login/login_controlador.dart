@@ -49,12 +49,11 @@ class LoginControlador {
 
       final data = userDoc.data();
 
-      // 🧠 VALIDAR ADMIN POR ROL
-      final esAdmin = data?['rol'] == 'admin';
+      // 🧠 ENRUTAMIENTO POR ROL
+      final rol = data?['rol'] as String?;
 
-      if (esAdmin) {
-        return '/mainTabAdmin';
-      }
+      if (rol == 'admin') return '/mainTabAdmin';
+      if (rol == 'recolector') return '/mainTabRecolector';
 
       // 📩 VERIFICACIÓN DE CORREO (solo usuarios normales)
       final refreshedUser = _auth.currentUser;
@@ -80,10 +79,9 @@ class LoginControlador {
         if (query.docs.isNotEmpty) {
           final data = query.docs.first.data();
 
-          // 🔥 VALIDAR SI ES ADMIN
-          if (data['rol'] == 'admin') {
-            return '/mainTabAdmin';
-          }
+          final rol = data['rol'] as String?;
+          if (rol == 'admin') return '/mainTabAdmin';
+          if (rol == 'recolector') return '/mainTabRecolector';
         }
 
         return 'No existe una cuenta con este correo';

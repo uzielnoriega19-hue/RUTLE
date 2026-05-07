@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:iconoir_flutter/iconoir_flutter.dart' as iconoir;
-import 'package:rutle_test/admin/mapas/mapa_principal_pantalla.dart';
-import 'package:rutle_test/admin/quejas/quejas_principal_pantalla.dart';
-import 'package:rutle_test/admin/rutas/ruta_principal_pantalla.dart';
-import 'package:rutle_test/admin/usuarios/pantallas/usuarios_principal_pantalla.dart';
+import 'package:rutle_test/modulos/usuario/usuarios_pantalla.dart';
+import 'chats/chats_recolector_pantalla.dart';
+import 'ubicacion/ubicacion_pantalla.dart';
 
-class MainTabAdmin extends StatefulWidget {
-  const MainTabAdmin({super.key});
+class MainTabRecolector extends StatefulWidget {
+  const MainTabRecolector({super.key});
 
   @override
-  State<MainTabAdmin> createState() => _MainTabAdminState();
+  State<MainTabRecolector> createState() => _MainTabRecolectorState();
 }
 
-class _MainTabAdminState extends State<MainTabAdmin> {
-
+class _MainTabRecolectorState extends State<MainTabRecolector> {
   DateTime? _ultimaPresion;
-  int _indexActual = 2;
+  int _indexActual = 1; // Empieza en el centro (Ubicación)
   bool _mostrarAviso = false;
 
   late PageController _pageController;
@@ -24,15 +22,11 @@ class _MainTabAdminState extends State<MainTabAdmin> {
   @override
   void initState() {
     super.initState();
-
-    _pageController = PageController(initialPage: 2);
-
-    _pantallas = [
-      const QuejasPrincipalPantalla(),
-      const RutaPrincipalPantalla(),
-      const MapasAdminPantalla(),
-      const _AdminVacioPantalla(label: 'Mensajes'),
-      const AdminPantalla(),
+    _pageController = PageController(initialPage: 1);
+    _pantallas = const [
+      ChatsRecolectorPantalla(),   // 0 - izquierda
+      UbicacionRecolectorPantalla(), // 1 - centro (principal)
+      UsuarioPantalla(),            // 2 - derecha
     ];
   }
 
@@ -42,28 +36,8 @@ class _MainTabAdminState extends State<MainTabAdmin> {
     super.dispose();
   }
 
-  Future<bool> _manejarBack() async {
-    if (_indexActual != 2) {
-      _pageController.jumpToPage(2);
-      setState(() => _indexActual = 2);
-      return false;
-    }
-
-    final ahora = DateTime.now();
-
-    if (_ultimaPresion == null ||
-        ahora.difference(_ultimaPresion!) > const Duration(seconds: 2)) {
-      _ultimaPresion = ahora;
-      _mostrarAvisoSalir();
-      return false;
-    }
-
-    return true;
-  }
-
   void _mostrarAvisoSalir() {
     setState(() => _mostrarAviso = true);
-
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
       setState(() => _mostrarAviso = false);
@@ -79,34 +53,24 @@ class _MainTabAdminState extends State<MainTabAdmin> {
     setState(() => _indexActual = index);
   }
 
-  Widget _buildIcono(Widget icono, int index) {
+  Widget _buildIcono(
+    Widget Function(Color color, double size) iconBuilder,
+    int index,
+  ) {
     final height = MediaQuery.of(context).size.height;
     final isSelected = _indexActual == index;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
     final baseColor = isDark ? Colors.white : Colors.black;
-
-    // 🔥 AQUÍ ESTÁ LA DIFERENCIA
-    double alpha;
-
-    if (index == 1) {
-      // 👉 rutas más oscuro
-      alpha = isSelected ? 1.0 : 0.7;
-    } else {
-      // 👉 los demás normal
-      alpha = isSelected ? 1.0 : 0.5;
-    }
-
+    final alpha = isSelected ? 1.0 : 0.5;
     final iconColor = baseColor.withValues(alpha: alpha);
-
-    final iconSize = index == 2 ? height * 0.040 : height * 0.032;
+    final iconSize = index == 1 ? height * 0.042 : height * 0.032;
 
     return GestureDetector(
       onTap: () => _cambiarPagina(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(
-          horizontal: height * 0.018,
+          horizontal: height * 0.022,
           vertical: height * 0.008,
         ),
         decoration: BoxDecoration(
@@ -115,12 +79,9 @@ class _MainTabAdminState extends State<MainTabAdmin> {
               : Colors.transparent,
           borderRadius: BorderRadius.circular(height * 0.02),
         ),
-        child: IconTheme(
-          data: IconThemeData(color: iconColor, size: iconSize),
-          child: Transform.scale(
-            scale: index == 1 ? 1.25 : 1.2, // 👉 ligeramente más grande rutas
-            child: icono,
-          ),
+        child: Transform.scale(
+          scale: 1.2,
+          child: iconBuilder(iconColor, iconSize),
         ),
       ),
     );
@@ -132,21 +93,35 @@ class _MainTabAdminState extends State<MainTabAdmin> {
     final width = MediaQuery.of(context).size.width;
     final topPadding = MediaQuery.of(context).padding.top;
 
-    return WillPopScope(
-      onWillPop: _manejarBack,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        if (_indexActual != 1) {
+          _cambiarPagina(1);
+          return;
+        }
+        final ahora = DateTime.now();
+        if (_ultimaPresion == null ||
+            ahora.difference(_ultimaPresion!) > const Duration(seconds: 2)) {
+          _ultimaPresion = ahora;
+          _mostrarAvisoSalir();
+          return;
+        }
+        Navigator.of(context).pop();
+      },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
-
+            // ── Páginas ──────────────────────────────────────────
             PageView(
               controller: _pageController,
-              onPageChanged: (index) {
-                setState(() => _indexActual = index);
-              },
+              onPageChanged: (i) => setState(() => _indexActual = i),
               children: _pantallas,
             ),
 
+            // ── Aviso salir ───────────────────────────────────────
             Positioned(
               top: topPadding + height * 0.015,
               left: width * 0.08,
@@ -190,6 +165,7 @@ class _MainTabAdminState extends State<MainTabAdmin> {
               ),
             ),
 
+            // ── Barra de navegación ───────────────────────────────
             Positioned(
               left: height * 0.03,
               right: height * 0.03,
@@ -231,56 +207,15 @@ class _MainTabAdminState extends State<MainTabAdmin> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildIcono(const iconoir.WarningTriangle(), 0),
-                      _buildIcono(const iconoir.Bus(), 1),
-                      _buildIcono(const iconoir.Map(), 2),
-                      _buildIcono(const iconoir.ChatBubble(), 3),
-                      _buildIcono(const iconoir.User(), 4),
+                      _buildIcono((c, s) => iconoir.ChatBubble(color: c, width: s, height: s), 0),
+                      _buildIcono((c, s) => Icon(Icons.navigation_rounded, color: c, size: s), 1),
+                      _buildIcono((c, s) => iconoir.User(color: c, width: s, height: s), 2),
                     ],
                   ),
                 );
               }),
             ),
-
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AdminVacioPantalla extends StatelessWidget {
-  final String label;
-  const _AdminVacioPantalla({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        toolbarHeight: 56,
-        backgroundColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: isDark
-                  ? const [Color(0xFF1C3F71), Color(0xFF1B78C9)]
-                  : const [Color(0xFF00ACC1), Color(0xFF6FD3FF)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-          ),
-        ),
-        title: Text(label, style: const TextStyle(color: Colors.white)),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Text(
-          'En construcción',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
         ),
       ),
     );

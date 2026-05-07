@@ -100,6 +100,7 @@ class _MapasAdminPantallaState extends State<MapasAdminPantalla> {
                           key: ValueKey('recoleccion'),
                           centroFijo: _gdl,
                           zoom: 12,
+                          mostrarCasa: false,
                         )
                       : const MapaQuejasPantalla(key: ValueKey('quejas')),
                 ),

@@ -4,11 +4,20 @@ import 'package:latlong2/latlong.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+class MapaRuta {
+  final List<LatLng> puntos;
+  final Color color;
+  const MapaRuta({required this.puntos, required this.color});
+}
+
 class MapaWidget extends StatefulWidget {
   final double zoom;
   final LatLng? centroFijo;
   final List<LatLng>? rutaPuntos;
   final Color? rutaColor;
+  final bool mostrarCasa;
+  final List<MapaRuta>? rutasHoy;
+  final bool ajustarARutas;
 
   const MapaWidget({
     super.key,
@@ -16,6 +25,9 @@ class MapaWidget extends StatefulWidget {
     this.centroFijo,
     this.rutaPuntos,
     this.rutaColor,
+    this.mostrarCasa = true,
+    this.rutasHoy,
+    this.ajustarARutas = true,
   });
 
   @override
@@ -72,6 +84,22 @@ class _MapaWidgetState extends State<MapaWidget>
         );
       });
     }
+  }
+
+  void _ajustarRutas() {
+    final rutas = widget.rutasHoy;
+    if (rutas == null || rutas.isEmpty) return;
+    final todos = <LatLng>[
+      if (_centroMapa != null) _centroMapa!,
+      for (final r in rutas) ...r.puntos,
+    ];
+    if (todos.length < 2) return;
+    _mapController.fitCamera(
+      CameraFit.bounds(
+        bounds: LatLngBounds.fromPoints(todos),
+        padding: const EdgeInsets.all(48),
+      ),
+    );
   }
 
   void _centrarMapa() {
@@ -131,7 +159,7 @@ class _MapaWidgetState extends State<MapaWidget>
           options: MapOptions(
             initialCenter: _centroMapa!,
             initialZoom: widget.zoom,
-
+            onMapReady: widget.ajustarARutas ? _ajustarRutas : null,
             interactionOptions: InteractionOptions(
               flags: _bloqueado
                   ? InteractiveFlag.none
@@ -144,67 +172,104 @@ class _MapaWidgetState extends State<MapaWidget>
               userAgentPackageName: 'com.example.rutle',
             ),
 
-            // Ruta del día (si fue asignada)
-            if (widget.rutaPuntos != null && widget.rutaPuntos!.length >= 2)
+            // Múltiples rutas del día
+            if (widget.rutasHoy != null && widget.rutasHoy!.isNotEmpty) ...[
               PolylineLayer(
                 polylines: [
-                  Polyline(
-                    points: widget.rutaPuntos!,
-                    color: widget.rutaColor ?? const Color(0xFF1E88E5),
-                    strokeWidth: 5,
-                  ),
+                  for (final r in widget.rutasHoy!)
+                    if (r.puntos.length >= 2)
+                      Polyline(
+                        points: r.puntos,
+                        color: r.color,
+                        strokeWidth: 5,
+                      ),
                 ],
               ),
-            if (widget.rutaPuntos != null && widget.rutaPuntos!.isNotEmpty)
+              MarkerLayer(
+                markers: [
+                  for (final r in widget.rutasHoy!)
+                    if (r.puntos.isNotEmpty)
+                      Marker(
+                        point: r.puntos.first,
+                        width: 18,
+                        height: 18,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: r.color,
+                            shape: BoxShape.circle,
+                            border:
+                                Border.all(color: Colors.white, width: 2.5),
+                          ),
+                        ),
+                      ),
+                ],
+              ),
+            ] else ...[
+              // Ruta única (compatibilidad con otras pantallas)
+              if (widget.rutaPuntos != null &&
+                  widget.rutaPuntos!.length >= 2)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: widget.rutaPuntos!,
+                      color: widget.rutaColor ?? const Color(0xFF1E88E5),
+                      strokeWidth: 5,
+                    ),
+                  ],
+                ),
+              if (widget.rutaPuntos != null &&
+                  widget.rutaPuntos!.isNotEmpty)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: widget.rutaPuntos!.first,
+                      width: 18,
+                      height: 18,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color:
+                              widget.rutaColor ?? const Color(0xFF1E88E5),
+                          shape: BoxShape.circle,
+                          border:
+                              Border.all(color: Colors.white, width: 2.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+
+            if (widget.mostrarCasa)
               MarkerLayer(
                 markers: [
                   Marker(
-                    point: widget.rutaPuntos!.first,
-                    width: 18,
-                    height: 18,
+                    point: _centroMapa!,
+                    width: 26,
+                    height: 26,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: widget.rutaColor ?? const Color(0xFF1E88E5),
+                        color: isDark
+                            ? const Color(0xFF1B78C9)
+                            : const Color(0xFF00ACC1),
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2.5),
+                        border: Border.all(color: Colors.white, width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.home_rounded,
+                        color: Colors.white,
+                        size: 13,
                       ),
                     ),
                   ),
                 ],
               ),
-
-            MarkerLayer(
-              markers: [
-                Marker(
-                  point: _centroMapa!,
-                  width: 44,
-                  height: 44,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF1B78C9)
-                          : const Color(0xFF00ACC1),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2.5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.home_rounded,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
 

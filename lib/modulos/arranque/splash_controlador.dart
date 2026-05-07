@@ -28,12 +28,10 @@ class SplashControlador {
 
       final data = userDoc.data();
 
-      final esAdmin = data?['rol'] == 'admin';
+      final rol = data?['rol'] as String?;
 
-      // 🚨 SI ES ADMIN → ENTRA DIRECTO
-      if (esAdmin) {
-        return RutasApp.mainTabAdmin;
-      }
+      if (rol == 'admin') return RutasApp.mainTabAdmin;
+      if (rol == 'recolector') return RutasApp.mainTabRecolector;
 
       // 📩 VALIDACIÓN NORMAL PARA USUARIOS
       if (!refreshedUser.emailVerified) {

@@ -296,11 +296,12 @@ class ChatbotControlador extends ChangeNotifier {
         'nombreUsuario': d['nombreUsuario'] ?? '',
         'correo': d['correo'] ?? user.email ?? '',
         'direccion': d['direccionCompleta'] ?? d['direccion'] ?? '',
+        'colonia': d['colonia'] ?? '',
       };
     }
 
     try {
-      await FirebaseFirestore.instance.collection('quejas').add({
+      await FirebaseFirestore.instance.collection('chatbot').add({
         'fecha': FieldValue.serverTimestamp(),
         'historial': historial,
         ...datosUsuario,

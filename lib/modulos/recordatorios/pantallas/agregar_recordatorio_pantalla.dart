@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:rutle_test/compartido/toast.dart';
 import 'package:rutle_test/modulos/mapas/controladores/barra_semana_controlador.dart';
 import '../controladores/agregar_recordatorio_controlador.dart';
 
@@ -90,23 +91,26 @@ class _AgregarRecordatorioPantallaState
   // ─── Ajusta la cámara para mostrar usuario + ruta ─────────────
 
   void _ajustarCamara() {
-    if (!_mapaListo) return;
-
-    final puntos = <LatLng>[
-      if (_posUsuario != null) _posUsuario!,
-      ..._rutaPuntos,
-    ];
-
-    if (puntos.length >= 2) {
-      _mapController.fitCamera(
-        CameraFit.bounds(
-          bounds: LatLngBounds.fromPoints(puntos),
-          padding: const EdgeInsets.all(60),
-        ),
-      );
-    } else if (_posUsuario != null) {
-      _mapController.move(_posUsuario!, 15.5);
-    }
+    if (!_mapaListo || !mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_mapaListo) return;
+      final puntos = <LatLng>[
+        ?_posUsuario,
+        ..._rutaPuntos,
+      ];
+      try {
+        if (puntos.length >= 2) {
+          _mapController.fitCamera(
+            CameraFit.bounds(
+              bounds: LatLngBounds.fromPoints(puntos),
+              padding: const EdgeInsets.all(60),
+            ),
+          );
+        } else if (_posUsuario != null) {
+          _mapController.move(_posUsuario!, 15.5);
+        }
+      } catch (_) {}
+    });
   }
 
   // ─── Al cambiar día: carga rutas activas filtradas ───────────
@@ -122,7 +126,6 @@ class _AgregarRecordatorioPantallaState
       _rutasFiltradas = [];
       _cargandoRutas = true;
     });
-    _ajustarCamara();
 
     final snap = await FirebaseFirestore.instance
         .collection('rutas')
@@ -200,7 +203,7 @@ class _AgregarRecordatorioPantallaState
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Agregar Recordatorio',
+        title: const Text('Agregar recordatorio',
             style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
@@ -588,11 +591,8 @@ class _AgregarRecordatorioPantallaState
                                         return;
                                       }
                                       if (_rutaDocId == null) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                          content: Text(
-                                              'Selecciona una ruta'),
-                                        ));
+                                        mostrarError(context,
+                                            'Selecciona una ruta primero');
                                         return;
                                       }
                                       setState(() => _guardando = true);
@@ -607,16 +607,14 @@ class _AgregarRecordatorioPantallaState
                                           ruta: 'Ruta $_rutaNombre',
                                         );
                                         if (context.mounted) {
+                                          mostrarExito(context,
+                                              '¡Recordatorio creado correctamente!');
                                           Navigator.pop(context, true);
                                         }
                                       } catch (e) {
                                         if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                            content: Text(
-                                                'Error al guardar: $e'),
-                                            backgroundColor: cs.error,
-                                          ));
+                                          mostrarError(context,
+                                              'Error al guardar el recordatorio');
                                         }
                                       } finally {
                                         if (mounted) {

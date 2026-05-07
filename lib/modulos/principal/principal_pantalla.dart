@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/dia_item.dart';
 import 'widgets/mapa_widget.dart';
 
+
 class PrincipalPantalla extends StatefulWidget {
   const PrincipalPantalla({super.key});
 
@@ -16,10 +17,8 @@ class PrincipalPantalla extends StatefulWidget {
 }
 
 class _PrincipalPantallaState extends State<PrincipalPantalla> {
-  // dayIndex (0=Lun … 6=Dom) → docId de la ruta asignada
   final Map<int, String> _rutasPorDia = {};
-  List<LatLng> _puntosHoy = [];
-  Color? _colorHoy;
+  List<MapaRuta> _rutasHoy = [];
 
   @override
   void initState() {
@@ -36,12 +35,10 @@ class _PrincipalPantallaState extends State<PrincipalPantalla> {
       if (docId != null) nuevas[i] = docId;
     }
 
-    // Cargar puntos de la ruta de hoy desde Firestore
-    List<LatLng> puntosHoy = [];
-    Color? colorHoy;
-
-    final hoyIdx = DateTime.now().weekday - 1; // 0=Lun…6=Dom
+    // Cargar solo la ruta asignada por el usuario para hoy
+    final hoyIdx = DateTime.now().weekday - 1;
     final hoyDocId = nuevas[hoyIdx];
+    final List<MapaRuta> rutasHoy = [];
 
     if (hoyDocId != null) {
       try {
@@ -50,14 +47,16 @@ class _PrincipalPantallaState extends State<PrincipalPantalla> {
             .doc(hoyDocId)
             .get();
         if (doc.exists) {
-          final raw = doc.data()?['puntos'] as List? ?? [];
-          puntosHoy = raw
+          final raw = doc.data()!['puntos'] as List? ?? [];
+          final puntos = raw
               .map((p) => LatLng(
                     (p['lat'] as num).toDouble(),
                     (p['lng'] as num).toDouble(),
                   ))
               .toList();
-          colorHoy = colorParaRuta(hoyDocId);
+          if (puntos.length >= 2) {
+            rutasHoy.add(MapaRuta(puntos: puntos, color: colorParaRuta(doc.id)));
+          }
         }
       } catch (_) {}
     }
@@ -67,8 +66,7 @@ class _PrincipalPantallaState extends State<PrincipalPantalla> {
         _rutasPorDia
           ..clear()
           ..addAll(nuevas);
-        _puntosHoy = puntosHoy;
-        _colorHoy = colorHoy;
+        _rutasHoy = rutasHoy;
       });
     }
   }
@@ -256,9 +254,9 @@ class _PrincipalPantallaState extends State<PrincipalPantalla> {
                 ),
                 clipBehavior: Clip.hardEdge,
                 child: MapaWidget(
-                  zoom: 15.5,
-                  rutaPuntos: _puntosHoy.length >= 2 ? _puntosHoy : null,
-                  rutaColor: _colorHoy,
+                  zoom: 13.5,
+                  rutasHoy: _rutasHoy.isNotEmpty ? _rutasHoy : null,
+                  ajustarARutas: false,
                 ),
               ),
 

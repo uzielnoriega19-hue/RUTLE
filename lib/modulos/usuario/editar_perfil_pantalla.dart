@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'editar_perfil_controlador.dart';
 import '../autenticacion/registro/icono_pantalla.dart';
 
+List<Color> _grad(bool isDark) => isDark
+    ? const [Color(0xFF1C3F71), Color(0xFF1B78C9)]
+    : const [Color(0xFF00ACC1), Color(0xFF6FD3FF)];
+
 class EditarPerfilPantalla extends StatefulWidget {
   const EditarPerfilPantalla({super.key});
 
@@ -132,10 +136,27 @@ class _EditarPerfilPantallaState extends State<EditarPerfilPantalla> {
       );
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final gradColors = _grad(isDark);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Editar perfil"),
+        elevation: 0,
+        toolbarHeight: 56,
+        backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: gradColors,
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
+        title: const Text("Editar perfil",
+            style: TextStyle(color: Colors.white)),
+        centerTitle: true,
       ),
 
       body: SafeArea(
@@ -212,21 +233,51 @@ class _EditarPerfilPantallaState extends State<EditarPerfilPantalla> {
 
                 SizedBox(height: size.height * 0.04),
 
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: confirmarGuardar,
-                    child: const Text("Guardar cambios"),
+                // ── Guardar (degradado) ───────────────────────
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: gradColors,
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        foregroundColor: Colors.white,
+                        minimumSize: Size(double.infinity, size.height * 0.058),
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero),
+                      ),
+                      onPressed: confirmarGuardar,
+                      child: const Text("Guardar cambios",
+                          style: TextStyle(fontWeight: FontWeight.w600)),
+                    ),
                   ),
                 ),
 
                 SizedBox(height: size.height * 0.015),
 
+                // ── Descartar (borde error) ───────────────────
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor:
+                          Theme.of(context).colorScheme.error,
+                      side: BorderSide(
+                          color: Theme.of(context).colorScheme.error),
+                      minimumSize: Size(double.infinity, size.height * 0.058),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
                     onPressed: confirmarDescartar,
-                    child: const Text("Descartar cambios"),
+                    child: const Text("Descartar cambios",
+                        style: TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 ),
 

@@ -9,6 +9,6 @@ class MapaQuejasPantalla extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MapaWidget(centroFijo: _gdl, zoom: 12);
+    return const MapaWidget(centroFijo: _gdl, zoom: 12, mostrarCasa: false);
   }
 }

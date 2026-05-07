@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rutle_test/compartido/toast.dart';
 import '../controladores/crear_foro_controlador.dart';
 
 class CrearForoPantalla extends StatefulWidget {
@@ -49,7 +50,7 @@ class _CrearForoPantallaState extends State<CrearForoPantalla> {
     });
   }
 
-  void mostrarError(String mensaje) {
+  void _mostrarDialogoError(String mensaje) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -92,23 +93,24 @@ class _CrearForoPantallaState extends State<CrearForoPantalla> {
               }
 
               if (tituloController.text.trim().isEmpty) {
-                mostrarError("Debes ingresar un título");
+                _mostrarDialogoError("Debes ingresar un título");
                 return;
               }
 
               if (descripcionController.text.trim().isEmpty) {
-                mostrarError("Debes ingresar una descripción");
+                _mostrarDialogoError("Debes ingresar una descripción");
                 return;
               }
 
               if (rutasSeleccionadas.isEmpty) {
-                mostrarError("Debes agregar al menos una ruta");
+                _mostrarDialogoError("Debes agregar al menos una ruta");
                 return;
               }
 
               try {
+                final titulo = tituloController.text.trim();
                 await controlador.crearForo(
-                  titulo: tituloController.text,
+                  titulo: titulo,
                   descripcion: descripcionController.text,
                   privacidad: privacidad,
                   rutas: rutasSeleccionadas,
@@ -116,11 +118,15 @@ class _CrearForoPantallaState extends State<CrearForoPantalla> {
 
                 if (!mounted) return;
 
+                mostrarExito(
+                  pantallaContext,
+                  '¡Foro "$titulo" creado correctamente!',
+                );
                 Navigator.pop(pantallaContext);
 
               } catch (e) {
                 if (!mounted) return;
-                mostrarError(e.toString());
+                mostrarError(pantallaContext, e.toString().replaceAll('Exception: ', ''));
               }
             },
             child: const Text('Sí'),

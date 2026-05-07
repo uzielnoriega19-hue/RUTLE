@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import '../../../nucleo/rutas_app.dart';
 import '../../../nucleo/tema_controlador.dart';
 import '../../../nucleo/widgets/boton_gradiente.dart';
+import 'crear_admin_recolector_pantalla.dart';
+import 'lista_usuarios_pantalla.dart';
 
 class AdminPantalla extends StatefulWidget {
   const AdminPantalla({super.key});
@@ -107,13 +109,29 @@ class _AdminPantallaState extends State<AdminPantalla> {
               child: BotonGradiente(
                 texto: "Crear admin o recolector",
                 ancho: double.infinity,
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Función en desarrollo"),
-                    ),
-                  );
-                },
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CrearAdminRecolectorPantalla(),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: size.height * 0.03),
+
+            // 👥 BOTÓN VER USUARIOS
+            SizedBox(
+              width: double.infinity,
+              child: BotonGradiente(
+                texto: "Ver usuarios",
+                ancho: double.infinity,
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ListaUsuariosPantalla(),
+                  ),
+                ),
               ),
             ),
 

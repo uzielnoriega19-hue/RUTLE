@@ -154,7 +154,7 @@ class _CrearRutaPantallaState extends State<CrearRutaPantalla> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Nueva Ruta',
+        title: const Text('Nueva ruta',
             style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),

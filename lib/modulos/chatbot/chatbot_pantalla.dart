@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rutle_test/compartido/toast.dart';
 import 'chatbot_controlador.dart';
 
 class ChatbotPantalla extends StatelessWidget {
@@ -180,19 +181,16 @@ class _ChatbotVista extends StatelessWidget {
                               try {
                                 await controlador.enviarAFirebase();
                                 if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Reporte enviado correctamente'),
-                                    ),
+                                  mostrarExito(
+                                    context,
+                                    '¡Reporte enviado correctamente!',
                                   );
                                 }
                               } catch (e) {
                                 if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Error al enviar: $e'),
-                                      backgroundColor: Theme.of(context).colorScheme.error,
-                                    ),
+                                  mostrarError(
+                                    context,
+                                    'Error al enviar el reporte',
                                   );
                                 }
                               }
